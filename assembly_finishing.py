@@ -17,7 +17,7 @@ import assembly_finishing_objects
 def output_to_fasta(output, compt, seq, prune):
 	n = False
 	for char in seq:
-		if -prune == True and (char == 'n' or char == 'N')):
+		if (prune == True and (char == 'n' or char == 'N')):
 			if (n == True):
 				continue
 			n = True
