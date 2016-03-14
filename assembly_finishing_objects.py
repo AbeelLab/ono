@@ -204,7 +204,7 @@ class Contig:
 				self.mum_sequences.append(Mum_sequence(orientation, mums[j:i]))
 				orientation = mums[i][5]
 				j = i
-			if (abs(mums[i-1][1] - mums[i][1]) > 2000000): # arbitrary value that is much bigger than any small jump that could happen, but smaller than the size of the genome
+			elif (abs(mums[i-1][1] - mums[i][1]) > 2000000): # arbitrary value that is much bigger than any small jump that could happen, but smaller than the size of the genome
 				self.mum_sequences.append(Mum_sequence(orientation, mums[j:i]))
 				orientation = mums[i][5]
 				j = i
