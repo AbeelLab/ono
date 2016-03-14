@@ -4,9 +4,6 @@ if not sys.version_info[0] == 2:
     print("Invalid version of python, use python 2.")
     sys.exit(1)
 
-import ez_setup
-ez_setup.use_setuptools()
-
 from setuptools import setup, Extension
 
 setup(name="ono", version="0.1",
