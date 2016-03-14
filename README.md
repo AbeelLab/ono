@@ -12,4 +12,4 @@ optional :
 	-step is the maximal distance at which the tool will look for neighbourhing MUMs during the cleaning step. All mums that have another mum within step distance will be kept, other will be discarded. This is done in order to ignore isolated mums like the ones circled on the figure below that usually correspond to small duplication (transposable elements) when trying to order and orient contigs.
 	-smallest is similar to step, but is only used in the case that there is only one MUM on that contig. For example, a common transposable element in TB is IS6110 that is usually 1354bp long, meaning it can be the main element in a MUM with the default minmum size of 1000. This option is to discard contigs that have only 1 such MUM. (setting this value to a lower or equal value to minmum will not have any effect).
 
-[!alt tag](ono/doc/mumplot_example.png)
+[[ono/doc/mumplot_example.png]]
