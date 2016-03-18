@@ -129,7 +129,7 @@ def main():
 	else:
 		compt = output_to_fasta(output, compt, index.T[2*v.rcsaoffset - rolling : v.rcsaoffset + v.contig_end - v.contig_start], args.prune)
 	
-        compt = output_to_fasta(output, compt, "X"*args.n, args.prune)
+        compt = output_to_fasta(output, compt, "N"*args.n, args.prune)
 	for c in seq.contigs[1:]:
 		# [1]+1 for id
 		# [2] to know if to reverse or not (take rcsaoffset instead of saoffset)
@@ -141,7 +141,7 @@ def main():
 			compt = output_to_fasta(output, compt, index.T[v.saoffset:v.saoffset + v.contig_end - v.contig_start], args.prune)
 		else:
 			compt = output_to_fasta(output, compt, index.T[v.rcsaoffset:v.rcsaoffset + v.contig_end - v.contig_start], args.prune)
-		compt = output_to_fasta(output, compt, "Y"*args.n, args.prune)
+		compt = output_to_fasta(output, compt, "N"*args.n, args.prune)
 	
         v = g.vertices.values()[seq.contigs[0].id]
 	if (seq.contigs[0].futur == 0):
