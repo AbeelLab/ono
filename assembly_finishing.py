@@ -12,8 +12,6 @@ import argparse
 import pickle
 import assembly_finishing_objects
 
-
-
 def output_to_fasta(output, compt, seq, prune):
 	n = False
 	for char in seq:
@@ -30,14 +28,50 @@ def output_to_fasta(output, compt, seq, prune):
 		compt += 1
 	return compt
 
+def fasta_reader(fn,truncN=False):
+    seq=""
+    with open(fn,'r') as ff:
+        for line in ff:
+            if line.startswith(">"):
+                if seq!="":
+                    yield name,seq
+                name=line.rstrip().replace(">","")
+                seq=""
+            else:
+                if truncN:
+                    for base in line.rstrip():
+                        if base.upper()=='N':
+                            if len(seq)==0:
+                                continue
+                            elif seq[-1]=='N':
+                                continue
+                            else:
+                                seq+='N'
+                        else:
+                            seq+=base
+                else:
+                    seq+=line.rstrip()
+        if seq!="":
+            yield name,seq
+
+def fasta_writer(fn,name_seq,lw=100):
+    seq=""
+    with open(fn,'w') as ff:
+        for name,seq in name_seq:
+            if not name.startswith(">"):
+                name=">"+name+"\n"
+            ff.write(name)
+            for i in range( (len(seq)/lw)+(len(seq) % lw > 0)):
+                ff.write(seq[i*lw:(i+1)*lw]+"\n")
 
 def main():
 	usage = "usage: assembly_finishing.py [options] <reference.fasta> <scaffolds.fasta>"
 	parser = argparse.ArgumentParser(usage)
 	parser.add_argument('fastas', nargs='*', help='Two fasta files for which mumplot is to be made.')
-	parser.add_argument("--minmum", type=int, dest="minmum", default=1, help="Mums below this size wont be used for the analysis nor shown in the plot.")
+	parser.add_argument("--minmum", type=int, dest="minmum", default=1000, help="Mums below this size wont be used for the analysis nor shown in the plot.")
 	parser.add_argument("-i","--interactive", action="store_true", dest="interactive", default=False, help="Whether or not to show interactive plots.")
 	parser.add_argument("-p", action="store_true", dest="ploting", default=False, help="Use to output an image of the mumplot in png format.")
+	parser.add_argument("-b", action="store_true", dest="breakgaps", default=False, help="Break the contigs at gaps, before scaffolding.")
 	parser.add_argument("-o", default = None, help = "The name of the output.")
 	parser.add_argument("-n", type = int, default = 1000, help = "Number of 'N's to be inserted between concatenated contigs.")
 	parser.add_argument("-step", type = int, default = 1000, help = "How far to look for neighbour MUMs.")
@@ -52,11 +86,22 @@ def main():
 	f1=args.fastas[0]
 	f2=args.fastas[1]
 	
+        if args.breakgaps:
+            for f in [f1,f2]:
+                contigs=[]
+                for name,seq in fasta_reader(f,truncN=True):
+	            seqs=seq.split('N')
+                    for seq in seqs:
+                        contigs.append((name+" ("+str(len(seq))+")",seq))
+                print f,len(contigs)
+                fasta_writer('_'+f,contigs)
+	    f1='_'+f1
+	    f2='_'+f2
+        
 	global index
 	index=GSA.index(f1,f2,1)
 	g=index.graph
 	mums=index.get_mums(args.minmum)
-
 
 ##########################################################
 
@@ -66,7 +111,7 @@ def main():
 		print "Nothing to do. Exiting."
 		return
 
-	print "New sequence generated"
+	print "New sequence generated", len(seq.contigs)
 	print "Writing to file....",
 
 	if (args.o is None):
@@ -83,7 +128,8 @@ def main():
 		compt = output_to_fasta(output, compt, index.T[rolling : v.saoffset + v.contig_end - v.contig_start], args.prune)
 	else:
 		compt = output_to_fasta(output, compt, index.T[2*v.rcsaoffset - rolling : v.rcsaoffset + v.contig_end - v.contig_start], args.prune)
-	compt = output_to_fasta(output, compt, "N"*args.n, args.prune)
+	
+        compt = output_to_fasta(output, compt, "N"*args.n, args.prune)
 	for c in seq.contigs[1:]:
 		# [1]+1 for id
 		# [2] to know if to reverse or not (take rcsaoffset instead of saoffset)
@@ -96,7 +142,8 @@ def main():
 		else:
 			compt = output_to_fasta(output, compt, index.T[v.rcsaoffset:v.rcsaoffset + v.contig_end - v.contig_start], args.prune)
 		compt = output_to_fasta(output, compt, "N"*args.n, args.prune)
-	v = g.vertices.values()[seq.contigs[0].id]
+	
+        v = g.vertices.values()[seq.contigs[0].id]
 	if (seq.contigs[0].futur == 0):
 		compt = output_to_fasta(output, compt, index.T[v.saoffset : rolling], args.prune)
 	else:
@@ -112,15 +159,17 @@ def main():
 	
 	print "Done."
 
+        if (args.ploting == True):
+            plot(f1,args,f2)
+            plot(f1,args,new_seq)
 
-	#############################################################
-	################ Restarting the analysis ####################
-	#############################################################
-	if (args.ploting == True):
-		index=GSA.index(f1,new_seq,1)
-		g=index.graph
-		mums=index.get_mums(args.minmum)
-
+def plot(f1,args,new_seq):
+        #############################################################
+        ################ Restarting the analysis ####################
+        #############################################################
+                index=GSA.index(f1,new_seq,1)
+                g=index.graph
+                mums=index.get_mums(args.minmum)
 
 	#    import collinearity
 	#    mums,falsemums=collinearity.filter_collinear_mums(mums)
@@ -195,17 +244,22 @@ def main():
 		plt.xlim(0, max(xticks))
 		plt.ylim(0, max(yticks))
 		plt.xlabel(os.path.basename(f1))
-		plt.ylabel(os.path.basename(f2))
+		plt.ylabel(os.path.basename(new_seq))
 		#ax=plt.twinx()
 		
 		plt.grid(linestyle='-',linewidth=1.)
-		plt.title(os.path.basename(f1)+' vs. '+os.path.basename(f2))
+		plt.title(os.path.basename(f1)+' vs. '+os.path.basename(new_seq))
 		# pickle.dump(ax, file(os.path.basename(f1)+'_'+os.path.basename(f2)+'.mumplot.pickle', 'w'))
-		plt.savefig(file(os.path.basename(f1)+'_'+os.path.basename(f2)+'.png','w'))
+		plt.savefig(file(os.path.basename(f1)+'_'+os.path.basename(new_seq)+'.png','w'))
 
 		if args.interactive==True:
 			plt.show()
-	
+                plt.clf()
+
+
+
+
+
 if __name__ == "__main__":
 	main()
 

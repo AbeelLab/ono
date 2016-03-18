@@ -44,7 +44,9 @@ class Sequence:
 				if (c.futur == None):
 					# searching if there is remaining noise that has inverted contigs
 					if ((current + 1 < sum(k > 0 for k in [len(cont.mum_sequences) for cont in self.contigs]))): # are they others contigs left after it
-						if (j != len(c.mum_sequences) # they are useful mum_sequences left
+						if self.contigs[current+1].search_true_first_sequence(start, step)==len(self.contigs[current+1].mum_sequences):
+							pass
+						elif (j != len(c.mum_sequences) # they are useful mum_sequences left
 							and c.mum_sequences[j].start > self.contigs[current+1].mum_sequences[self.contigs[current+1].search_true_first_sequence(start, step)].start): # could it fit after the next contig
 							self.swap_contigs(current, current + 1)
 							continue # restart the loop
