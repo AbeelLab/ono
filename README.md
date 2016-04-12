@@ -5,6 +5,7 @@ This tool tries to order and orient the contigs of a genome using a reference.
 It is based on the libraries of : https://github.com/jasperlinthorst/reveal
 
 Install instructions as taken from the release of Reveal used at the time of writing of this tool :
+
 	It also depends on the following 3d party packages:
 
 	  libdivsufsort 2.0.1
@@ -27,6 +28,10 @@ Install instructions as taken from the release of Reveal used at the time of wri
 	  git clone https://github.com/mhulsman/seqal.git
 	  cd seqal
 	  python setup.py install
+
+You will also need to install the python library matplotlib :
+
+	sudo apt-get install python-matplotlib
 
 You can then install ONO by running :
 
