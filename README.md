@@ -4,6 +4,36 @@ Order and orient
 This tool tries to order and orient the contigs of a genome using a reference.
 It is based on the libraries of : https://github.com/jasperlinthorst/reveal
 
+Install instructions as taken from the release of Reveal used at the time of writing of this tool :
+	It also depends on the following 3d party packages:
+
+	  libdivsufsort 2.0.1
+	  seqal --> https://github.com/mhulsman/seqal
+
+	1) Build and install libdivsufsort 2.0.1 In order to build and install libdivsufsort you need to have CMAKE (versions should be available for most operating systems). After that's installed do the following:
+
+	  wget https://libdivsufsort.googlecode.com/files/libdivsufsort-2.0.1.tar.gz
+	  tar xvf libdivsufsort-2.0.1.tar.gz
+	  cd libdivsufsort-2.0.1
+	  mkdir build
+	  cd build
+	  cmake -DBUILD_DIVSUFSORT64:BOOL=ON -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX="/usr/local" ..
+	  make install
+
+	Libdivsufsort should now be installed into your default installation directory (most likely /usr/local/lib).
+
+	2) Build and install seqal Seqal is a python package that is used by ProBubble to perform Needleman-Wunsch alignments of larger bubbles to detect inversions. To build and install it, do the following:
+
+	  git clone https://github.com/mhulsman/seqal.git
+	  cd seqal
+	  python setup.py install
+
+You can then install ONO by running :
+
+	python setup.py
+
+
+Running ONO:
 
 	python assembly_finishing.py --minmum minimal_match_size -n number_of_N_to_insert_between_contigs reference.fasta contigs.fasta
 optional :  
