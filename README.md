@@ -4,6 +4,10 @@ Order and orient
 This tool tries to order and orient the contigs of a genome using a reference.
 It is based on the libraries of : https://github.com/jasperlinthorst/reveal
 
+Before the specific libraries installation, they are some common libraries and tools you might need to install if you do not have them already :
+
+	sudo apt-get install git cmake zlib1g-dev python-dev python-matplotlib
+
 Install instructions as taken from the release of Reveal used at the time of writing of this tool :
 
 	It also depends on the following 3d party packages:
@@ -18,8 +22,8 @@ Install instructions as taken from the release of Reveal used at the time of wri
 	  cd libdivsufsort-2.0.1
 	  mkdir build
 	  cd build
-	  cmake -DBUILD_DIVSUFSORT64:BOOL=ON -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX="/usr/local" ..
-	  make install
+	  sudo cmake -DBUILD_DIVSUFSORT64:BOOL=ON -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX="/usr/local" ..
+	  sudo make install
 
 	Libdivsufsort should now be installed into your default installation directory (most likely /usr/local/lib).
 
@@ -27,15 +31,11 @@ Install instructions as taken from the release of Reveal used at the time of wri
 
 	  git clone https://github.com/mhulsman/seqal.git
 	  cd seqal
-	  python setup.py install
-
-You will also need to install the python library matplotlib :
-
-	sudo apt-get install python-matplotlib
+	  sudo python setup.py install
 
 You can then install ONO by running :
 
-	python setup.py
+	sudo python setup.py install
 
 
 Running ONO:
